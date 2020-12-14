@@ -1,0 +1,8 @@
+name: Cosmetics
+version: 1.0
+author: joeleoli
+main: net.evilblock.cosmetics.CosmeticsPlugin
+depend:
+  - Cubed
+softdepend:
+  - PrisonAIO
