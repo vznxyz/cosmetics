@@ -8,7 +8,7 @@ object TracksCommand {
 
     @Command(
             names = ["tracks", "track"],
-            description = "Open the Tracks menu"
+            description = "Open the Tracks GUI"
     )
     @JvmStatic
     fun execute(player: Player) {

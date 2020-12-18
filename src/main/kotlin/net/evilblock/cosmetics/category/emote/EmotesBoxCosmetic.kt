@@ -1,10 +1,9 @@
-package net.evilblock.cosmetics.category.hidden
+package net.evilblock.cosmetics.category.emote
 
 import net.evilblock.cosmetics.Cosmetic
 import net.evilblock.cosmetics.CosmeticCategory
-import net.evilblock.cosmetics.category.HiddenCosmeticCategory
-import net.evilblock.cosmetics.category.hidden.emote.Emote
-import net.evilblock.cosmetics.category.hidden.emote.impl.HeartEmote
+import net.evilblock.cosmetics.category.EmotesCosmeticCategory
+import net.evilblock.cosmetics.category.emote.impl.HeartEmote
 import net.evilblock.cosmetics.menu.EmoteBoxMenu
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.ChatColor
@@ -20,7 +19,7 @@ object EmotesBoxCosmetic : Cosmetic() {
     val emotes = arrayListOf<Emote>(HeartEmote())
 
     override fun getCategory(): CosmeticCategory {
-        return HiddenCosmeticCategory
+        return EmotesCosmeticCategory
     }
 
     override fun getID(): String {

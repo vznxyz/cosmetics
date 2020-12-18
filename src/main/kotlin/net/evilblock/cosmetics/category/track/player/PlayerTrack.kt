@@ -1,7 +1,7 @@
 package net.evilblock.cosmetics.category.track.player
 
+import net.evilblock.cosmetics.CosmeticsPlugin
 import net.evilblock.cosmetics.category.track.Track
-import net.evilblock.cubed.util.bukkit.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -25,6 +25,7 @@ class PlayerTrack(val track: Track) {
 
     fun tick() {
         if (cachedPlayer == null) {
+            println("cached player null")
             return
         }
 
@@ -44,6 +45,17 @@ class PlayerTrack(val track: Track) {
 
     private fun tickWatchers() {
         for (player in Bukkit.getOnlinePlayers()) {
+            // respect user settings
+            if (!CosmeticsPlugin.instance.hook.canRenderTracks(player)) {
+                if (watchers.contains(player)) {
+                    clearChanges(player)
+                    watchers.remove(player)
+                }
+
+                continue
+            }
+
+            // distance tells us if the track is visible to the player
             val distance = if (player.location.world == cachedPlayer!!.location.world) {
                 player.location.distance(cachedPlayer!!.location)
             } else {
@@ -67,7 +79,6 @@ class PlayerTrack(val track: Track) {
         val queueIterator = queuedChanges.iterator()
         while (queueIterator.hasNext()) {
             val location = queueIterator.next()
-
             queueIterator.remove()
 
             val expiry = if (completedChanges.containsKey(location)) {
@@ -76,7 +87,7 @@ class PlayerTrack(val track: Track) {
                 -1L
             }
 
-            completedChanges[location] = AtomicLong(System.currentTimeMillis() + 5_000L)
+            completedChanges[location] = AtomicLong(System.currentTimeMillis() + track.blockTime)
 
             if (expiry == -1L || System.currentTimeMillis() >= expiry) {
                 val nextBlockType = track.nextBlockType()
@@ -96,7 +107,7 @@ class PlayerTrack(val track: Track) {
                     if (location.distance(cachedPlayer!!.location) >= 3) {
                         clearedChanges.add(location)
                     } else {
-                        expiration.set(System.currentTimeMillis() + 5_000L)
+                        expiration.set(System.currentTimeMillis() + track.blockTime)
                     }
                 }
             }
@@ -107,16 +118,14 @@ class PlayerTrack(val track: Track) {
         }
 
         if (watchers.isNotEmpty() && clearedChanges.isNotEmpty()) {
-            Tasks.async {
-                for (player in watchers) {
-                    for (location in clearedChanges) {
-                        if (!location.isChunkLoaded) {
-                            continue
-                        }
-
-                        val block = location.block
-                        player.sendBlockChange(location, block.type, block.data)
+            for (player in watchers) {
+                for (location in clearedChanges) {
+                    if (!location.isChunkLoaded) {
+                        continue
                     }
+
+                    val block = location.block
+                    player.sendBlockChange(location, block.type, block.data)
                 }
             }
         }

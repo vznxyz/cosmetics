@@ -4,5 +4,3 @@ author: joeleoli
 main: net.evilblock.cosmetics.CosmeticsPlugin
 depend:
   - Cubed
-softdepend:
-  - PrisonAIO

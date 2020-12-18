@@ -1,8 +1,8 @@
 package net.evilblock.cosmetics.profile.listener
 
+import net.evilblock.cosmetics.CosmeticsPlugin
 import net.evilblock.cosmetics.TickableCosmetic
 import net.evilblock.cosmetics.profile.ProfileHandler
-import net.evilblock.prisonaio.module.robot.cosmetic.CosmeticHandler
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
@@ -24,9 +24,11 @@ object ProfileLoadListeners : Listener {
                 profile.track!!.cachedPlayer = event.player
             }
 
-            for (cosmetic in profile.getEnabledCosmetics()) {
-                if (profile.isCosmeticEnabled(cosmetic) || !cosmetic.hasState()) {
-                    cosmetic.onEnable(event.player)
+            if (CosmeticsPlugin.instance.hook.inSupportedRegion(event.player)) {
+                for (cosmetic in profile.getEnabledCosmetics()) {
+                    if (profile.isCosmeticEnabled(cosmetic) || !cosmetic.hasState()) {
+                        cosmetic.onEnable(event.player)
+                    }
                 }
             }
         }
@@ -36,10 +38,14 @@ object ProfileLoadListeners : Listener {
     fun onPlayerQuitEvent(event: PlayerQuitEvent) {
         val profile = ProfileHandler.getProfile(event.player)
         if (profile != null) {
-            for (cosmetic in CosmeticHandler.getRegisteredCosmetics()) {
+            for (cosmetic in profile.getEnabledCosmetics()) {
+                cosmetic.onDisable(event.player)
+
                 if (cosmetic is TickableCosmetic) {
                     cosmetic.ticks.remove(event.player.uniqueId)
                 }
+
+                profile.requiresSave = true
             }
 
             if (profile.track != null) {
@@ -47,6 +53,10 @@ object ProfileLoadListeners : Listener {
             }
 
             ProfileHandler.forgetProfile(profile)
+
+            if (profile.requiresSave) {
+                ProfileHandler.saveProfile(profile)
+            }
         }
     }
 

@@ -47,7 +47,7 @@ object BubblesEffect : TickableCosmetic(), Listener {
         location.y = ThreadLocalRandom.current().nextDouble(location.y, player.eyeLocation.y)
         location.z = ThreadLocalRandom.current().nextDouble(location.z - 0.33, location.z + 0.33)
 
-        ParticleUtil.sendsParticleToAll(ParticleMeta(location, EnumParticle.SPELL_MOB_AMBIENT, 0F, 0F, 0F, 1F, 10))
+        ParticleUtil.sendsParticleToAll(location.world, ParticleMeta(location, EnumParticle.SPELL_MOB_AMBIENT, 0F, 0F, 0F, 1F, 10))
 
         if (ticks >= 6) {
             ticks = 0

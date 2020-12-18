@@ -37,6 +37,40 @@ object ProfileHandler {
         return mongoCollection
     }
 
+    fun getProfiles(): Collection<Profile> {
+        return profiles.values
+    }
+
+    fun getProfile(player: Player): Profile? {
+        return profiles[player.uniqueId]
+    }
+
+    fun loadProfile(uuid: UUID) {
+        val profile = fetchProfile(uuid)
+        profiles[uuid] = profile
+    }
+
+    fun fetchProfile(uuid: UUID): Profile {
+        val document = mongoCollection.find(Document("uuid", uuid.toString())).first() ?: return Profile(uuid)
+        return deserializeDocument(document)
+    }
+
+    fun forgetProfile(profile: Profile) {
+        profiles.remove(profile.uuid)
+    }
+
+    fun saveProfile(profile: Profile) {
+        mongoCollection.replaceOne(Document("uuid", profile.uuid.toString()), Document.parse(Cubed.gson.toJson(profile)), ReplaceOptions().upsert(true))
+        profile.requiresSave = false
+    }
+
+    private val JSON_WRITER_SETTINGS = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build()
+    private val PROFILE_TYPE: Type = object : TypeToken<Profile>() {}.type
+
+    private fun deserializeDocument(document: Document): Profile {
+        return Cubed.gson.fromJson(document.toJson(JSON_WRITER_SETTINGS), PROFILE_TYPE) as Profile
+    }
+
     fun isCosmeticEnabled(player: Player, cosmetic: Cosmetic): Boolean {
         val profile = profiles[player.uniqueId]
         return profile?.isCosmeticEnabled(cosmetic) ?: false
@@ -73,40 +107,7 @@ object ProfileHandler {
                     }
                 }
             }
-
-            Tasks.async {
-                saveProfile(profile)
-            }
         }
-    }
-
-    fun getProfile(player: Player): Profile? {
-        return profiles[player.uniqueId]
-    }
-
-    fun loadProfile(uuid: UUID) {
-        val profile = fetchProfile(uuid)
-        profiles[uuid] = profile
-    }
-
-    fun fetchProfile(uuid: UUID): Profile {
-        val document = mongoCollection.find(Document("uuid", uuid.toString())).first() ?: return Profile(uuid)
-        return deserializeDocument(document)
-    }
-
-    fun forgetProfile(profile: Profile) {
-        profiles.remove(profile.uuid)
-    }
-
-    fun saveProfile(profile: Profile) {
-        mongoCollection.replaceOne(Document("uuid", profile.uuid.toString()), Document.parse(Cubed.gson.toJson(profile)), ReplaceOptions().upsert(true))
-    }
-
-    private val JSON_WRITER_SETTINGS = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build()
-    private val PROFILE_TYPE: Type = object : TypeToken<Profile>() {}.type
-
-    private fun deserializeDocument(document: Document): Profile {
-        return Cubed.gson.fromJson(document.toJson(JSON_WRITER_SETTINGS), PROFILE_TYPE) as Profile
     }
 
 }

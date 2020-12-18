@@ -1,4 +1,4 @@
-package net.evilblock.cosmetics.category.hidden.emote
+package net.evilblock.cosmetics.category.emote
 
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack

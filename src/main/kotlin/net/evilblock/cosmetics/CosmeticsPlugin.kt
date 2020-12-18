@@ -1,6 +1,7 @@
 package net.evilblock.cosmetics
 
 import net.evilblock.cosmetics.category.*
+import net.evilblock.cosmetics.category.emote.command.EmoteCommand
 import net.evilblock.cosmetics.category.track.TrackHandler
 import net.evilblock.cosmetics.category.track.command.TracksCommand
 import net.evilblock.cosmetics.category.track.command.TracksEditorCommand
@@ -9,14 +10,13 @@ import net.evilblock.cosmetics.command.CosmeticsCommand
 import net.evilblock.cosmetics.command.CosmeticsListCommand
 import net.evilblock.cosmetics.command.ReloadCommand
 import net.evilblock.cosmetics.command.WipeCommand
-import net.evilblock.cosmetics.hook.CosmeticsHook
+import net.evilblock.cosmetics.hook.Hook
+import net.evilblock.cosmetics.hook.NoHook
 import net.evilblock.cosmetics.profile.listener.ProfileCosmeticListeners
-import net.evilblock.cosmetics.menu.CategoriesMenu
 import net.evilblock.cosmetics.profile.ProfileHandler
 import net.evilblock.cosmetics.profile.listener.ProfileLoadListeners
 import net.evilblock.cosmetics.thread.CosmeticsThread
 import net.evilblock.cubed.command.CommandHandler
-import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -27,12 +27,12 @@ class CosmeticsPlugin : JavaPlugin() {
         lateinit var instance: CosmeticsPlugin
     }
 
-    var hook: CosmeticsHook? = null
+    var hook: Hook = NoHook()
 
     val categories: List<CosmeticCategory> = arrayListOf(
             ArmorCosmeticCategory,
             CostumesCosmeticCategory,
-            HiddenCosmeticCategory,
+            EmotesCosmeticCategory,
             TracksCosmeticCategory,
             EffectsCosmeticCategory
     )
@@ -48,6 +48,7 @@ class CosmeticsPlugin : JavaPlugin() {
         CommandHandler.registerClass(WipeCommand.javaClass)
         CommandHandler.registerClass(CosmeticsCommand.javaClass)
         CommandHandler.registerClass(CosmeticsListCommand.javaClass)
+        CommandHandler.registerClass(EmoteCommand.javaClass)
         CommandHandler.registerClass(TracksCommand.javaClass)
         CommandHandler.registerClass(TracksEditorCommand.javaClass)
 
@@ -77,10 +78,6 @@ class CosmeticsPlugin : JavaPlugin() {
 
     fun getCosmeticById(id: String): Cosmetic? {
         return cosmetics[id.toLowerCase()]
-    }
-
-    fun openMenu(player: Player) {
-        CategoriesMenu().openMenu(player)
     }
 
     fun getStorageDatabase(): String {

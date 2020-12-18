@@ -1,6 +1,9 @@
 package net.evilblock.cosmetics.menu
 
 import net.evilblock.cosmetics.CosmeticCategory
+import net.evilblock.cosmetics.category.EmotesCosmeticCategory
+import net.evilblock.cosmetics.category.TracksCosmeticCategory
+import net.evilblock.cosmetics.category.track.menu.TracksMenu
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.ChatColor
@@ -30,7 +33,17 @@ class CategoryButton(private val category: CosmeticCategory) : Button() {
     }
 
     override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
-        CosmeticsMenu(category).openMenu(player)
+        when (category) {
+            TracksCosmeticCategory -> {
+                TracksMenu().openMenu(player)
+            }
+            EmotesCosmeticCategory -> {
+                EmoteBoxMenu().openMenu(player)
+            }
+            else -> {
+                CosmeticsMenu(category).openMenu(player)
+            }
+        }
     }
 
 }

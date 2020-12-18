@@ -1,8 +1,10 @@
 package net.evilblock.cosmetics.menu
 
-import net.evilblock.cosmetics.category.hidden.EmotesBoxCosmetic
+import net.evilblock.cosmetics.CosmeticsPlugin
+import net.evilblock.cosmetics.category.emote.EmotesBoxCosmetic
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.menu.buttons.BackButton
 import org.bukkit.entity.Player
 
 class EmoteBoxMenu : Menu() {
@@ -12,14 +14,13 @@ class EmoteBoxMenu : Menu() {
     }
 
     override fun getButtons(player: Player): Map<Int, Button> {
-        val buttons = hashMapOf<Int, Button>()
+        return hashMapOf<Int, Button>().also { buttons ->
+            buttons[0] = BackButton { CosmeticsPlugin.instance.hook.openMainMenu(player) }
 
-        var i = 0
-        for (emote in EmotesBoxCosmetic.emotes) {
-            buttons[i++] = EmoteButton(emote)
+            for ((index, emote) in EmotesBoxCosmetic.emotes.withIndex()) {
+                buttons[index] = EmoteButton(emote)
+            }
         }
-
-        return buttons
     }
 
 }

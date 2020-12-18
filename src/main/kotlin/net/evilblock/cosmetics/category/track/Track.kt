@@ -16,8 +16,8 @@ class Track(private val id: String) : Cosmetic(), Listener {
     var desc: String = ""
 
     var radius: Int = 5
-    var duration: Long = 3000L
 
+    var blockTime: Long = 3000L
     val blockTypes: MutableList<TrackBlock> = arrayListOf()
 
     override fun getCategory(): CosmeticCategory {

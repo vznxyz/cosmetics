@@ -66,9 +66,4 @@ object AlienEffect : TickableCosmetic(), Listener {
 //        this.ticks[player.uniqueId] = ticks
     }
 
-    @EventHandler
-    fun onPlayerQuitEvent(event: PlayerQuitEvent) {
-        ticks.remove(event.player.uniqueId)
-    }
-
 }

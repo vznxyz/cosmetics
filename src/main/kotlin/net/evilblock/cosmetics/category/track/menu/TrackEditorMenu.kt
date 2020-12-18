@@ -87,7 +87,7 @@ class TrackEditorMenu : PaginatedMenu() {
 
             description.add("")
             description.add("${ChatColor.GREEN}${ChatColor.BOLD}LEFT-CLICK ${ChatColor.GREEN}to edit track")
-            description.add("${ChatColor.RED}${ChatColor.BOLD}RIGHT-CLICK ${ChatColor.RED}to edit track")
+            description.add("${ChatColor.RED}${ChatColor.BOLD}RIGHT-CLICK ${ChatColor.RED}to delete track")
 
             return description
         }
@@ -134,7 +134,7 @@ class TrackEditorMenu : PaginatedMenu() {
                 EzPrompt.Builder()
                     .charLimit(48)
                     .promptText("${ChatColor.GREEN}Please input a unique ID for the new track.")
-                    .acceptInput { _, input ->
+                    .acceptInput { input ->
                         val track = Track(id = input)
                         TrackHandler.trackTrack(track)
 

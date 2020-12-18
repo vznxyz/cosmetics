@@ -18,6 +18,9 @@ class Profile(val uuid: UUID) {
     @JsonAdapter(PlayerTrackSerializer::class)
     var track: PlayerTrack? = null
 
+    @Transient
+    var requiresSave: Boolean = false
+
     fun getEnabledCosmetics(): List<Cosmetic> {
         return cosmetics.filter { it.value }.keys.toList()
     }
@@ -32,6 +35,8 @@ class Profile(val uuid: UUID) {
         } else {
             cosmetics[cosmetic] = true
         }
+
+        requiresSave = true
     }
 
     object StatesMapSerializer : JsonSerializer<HashMap<Cosmetic, Boolean>>, JsonDeserializer<HashMap<Cosmetic, Boolean>> {

@@ -2,6 +2,7 @@ package net.evilblock.cosmetics.profile.listener
 
 import net.evilblock.cosmetics.category.track.util.TrackUtil
 import net.evilblock.cosmetics.profile.ProfileHandler
+import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
@@ -30,7 +31,9 @@ object ProfileTrackListeners : Listener {
             val track = ProfileHandler.getProfile(event.player)?.track
             if (track != null) {
                 for (location in TrackUtil.getNewTrail(event.to.clone().add(0.0, -1.0, 0.0), false, track.track.radius)) {
-                    track.addBlockChange(location)
+                    if (location.block.type != Material.SPONGE) {
+                        track.addBlockChange(location)
+                    }
                 }
             }
         }

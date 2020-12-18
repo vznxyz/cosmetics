@@ -1,6 +1,6 @@
 package net.evilblock.cosmetics.menu
 
-import net.evilblock.cosmetics.category.hidden.emote.Emote
+import net.evilblock.cosmetics.category.emote.Emote
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.util.bukkit.ItemBuilder
 import org.bukkit.ChatColor

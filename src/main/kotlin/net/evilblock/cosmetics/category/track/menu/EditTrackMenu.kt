@@ -6,12 +6,15 @@ import net.evilblock.cosmetics.category.track.TrackHandler
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
 import net.evilblock.cubed.menu.buttons.GlassButton
+import net.evilblock.cubed.menu.buttons.NumberButton
 import net.evilblock.cubed.menu.menus.ConfirmMenu
 import net.evilblock.cubed.menu.menus.SelectItemStackMenu
 import net.evilblock.cubed.util.NumberUtils
 import net.evilblock.cubed.util.TextSplitter
+import net.evilblock.cubed.util.TimeUtil
 import net.evilblock.cubed.util.bukkit.Tasks
-import net.evilblock.cubed.util.bukkit.prompt.EzPrompt
+import net.evilblock.cubed.util.bukkit.prompt.DurationPrompt
+import net.evilblock.cubed.util.bukkit.prompt.InputPrompt
 import net.evilblock.cubed.util.bukkit.prompt.NumberPrompt
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -35,6 +38,9 @@ class EditTrackMenu(private val track: Track) : Menu() {
 
         buttons[0] = EditNameButton()
         buttons[2] = EditIconButton()
+        buttons[4] = EditDescriptionButton()
+        buttons[6] = EditRadiusButton()
+        buttons[8] = EditDurationButton()
 
         for (i in 9..17) {
             buttons[i] = GlassButton(0)
@@ -158,9 +164,9 @@ class EditTrackMenu(private val track: Track) : Menu() {
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
             if (clickType.isLeftClick) {
-                EzPrompt.Builder()
-                        .promptText("${ChatColor.GREEN}Please input a new name for the track.")
-                        .acceptInput { _, input ->
+                InputPrompt()
+                        .withText("${ChatColor.GREEN}Please input a new name for the track.")
+                        .acceptInput { input ->
                             track.displayName = ChatColor.translateAlternateColorCodes('&', input)
 
                             Tasks.async {
@@ -169,7 +175,6 @@ class EditTrackMenu(private val track: Track) : Menu() {
 
                             this@EditTrackMenu.openMenu(player)
                         }
-                        .build()
                         .start(player)
             }
         }
@@ -211,15 +216,99 @@ class EditTrackMenu(private val track: Track) : Menu() {
     }
 
     private inner class EditDescriptionButton : Button() {
+        override fun getName(player: Player): String {
+            return "${ChatColor.AQUA}${ChatColor.BOLD}Edit Description"
+        }
 
+        override fun getDescription(player: Player): List<String> {
+            return arrayListOf<String>().also { desc ->
+                desc.add("")
+                desc.addAll(TextSplitter.split(text = "The description that is rendered to the user in menus."))
+                desc.add("")
+                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to edit description"))
+            }
+        }
+
+        override fun getMaterial(player: Player): Material {
+            return Material.SIGN
+        }
+
+        override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
+            if (clickType.isLeftClick) {
+                InputPrompt()
+                        .withText("${ChatColor.GREEN}Please input a new description.")
+                        .acceptInput { input ->
+                            track.desc = input
+
+                            Tasks.async {
+                                TrackHandler.saveData()
+                            }
+
+                            this@EditTrackMenu.openMenu(player)
+                        }
+                        .start(player)
+            }
+        }
     }
 
-    private inner class EditRadiusButton : Button() {
+    private inner class EditRadiusButton : NumberButton(number = track.radius, range = 1..10) {
+        override fun getName(player: Player): String {
+            return "${ChatColor.AQUA}${ChatColor.BOLD}Edit Radius ${ChatColor.GRAY}(${track.radius})"
+        }
 
+        override fun getDescription(player: Player): List<String> {
+            return arrayListOf<String>().also { desc ->
+                desc.add("")
+                desc.addAll(TextSplitter.split(text = "The radius is the number of blocks the track spans, in 1 direction."))
+                desc.addAll(super.getDescription(player))
+            }
+        }
+
+        override fun onChange(number: Int) {
+            track.radius = number
+
+            Tasks.async {
+                TrackHandler.saveData()
+            }
+        }
     }
 
     private inner class EditDurationButton : Button() {
+        override fun getName(player: Player): String {
+            return "${ChatColor.AQUA}${ChatColor.BOLD}Edit Block Time ${ChatColor.GRAY}(${TimeUtil.formatIntoAbbreviatedString((track.blockTime / 1000.0).toInt())})"
+        }
 
+        override fun getDescription(player: Player): List<String> {
+            return arrayListOf<String>().also { desc ->
+                desc.add("")
+                desc.addAll(TextSplitter.split(text = "The block time is the amount of time each track block appears for."))
+                desc.add("")
+                desc.add(styleAction(ChatColor.GREEN, "LEFT-CLICK", "to edit duration"))
+            }
+        }
+
+        override fun getMaterial(player: Player): Material {
+            return Material.WATCH
+        }
+
+        override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
+            if (clickType.isLeftClick) {
+                DurationPrompt { duration ->
+                    if (duration !in 1000..5000) {
+                        player.sendMessage("${ChatColor.RED}Duration must be in the range of 1.0s - 5.0s!")
+                        return@DurationPrompt
+                    }
+
+                    track.blockTime = duration
+
+                    Tasks.async {
+                        TrackHandler.saveData()
+                    }
+
+                    this@EditTrackMenu.openMenu(player)
+                }.start(player)
+            }
+        }
     }
 
 }

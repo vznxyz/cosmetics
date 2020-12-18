@@ -1,7 +1,7 @@
-package net.evilblock.cosmetics.category.hidden.emote.impl
+package net.evilblock.cosmetics.category.emote.impl
 
 import net.evilblock.cosmetics.util.particle.ParticleUtil
-import net.evilblock.cosmetics.category.hidden.emote.Emote
+import net.evilblock.cosmetics.category.emote.Emote
 import net.evilblock.cosmetics.util.particle.ParticleMeta
 import net.minecraft.server.v1_12_R1.EnumParticle
 import org.bukkit.ChatColor
@@ -24,12 +24,7 @@ class HeartEmote : Emote {
     }
 
     override fun playEffect(location: Location) {
-        ParticleUtil.sendsParticleToAll(
-            ParticleMeta(
-                location,
-                EnumParticle.HEART
-            )
-        )
+        ParticleUtil.sendsParticleToAll(location.world, ParticleMeta(location, EnumParticle.HEART))
     }
 
 }

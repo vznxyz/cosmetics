@@ -1,5 +1,6 @@
 package net.evilblock.cosmetics.menu
 
+import net.evilblock.cosmetics.CosmeticsPlugin
 import net.evilblock.cosmetics.category.*
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
@@ -27,14 +28,15 @@ class CategoriesMenu : Menu() {
                 buttons[i] = GlassButton(0)
             }
 
-            buttons[0] = BackButton {  }
+            buttons[0] = BackButton { CosmeticsPlugin.instance.hook.openMainMenu(player) }
             buttons[4] = InfoButton()
 
             buttons[20] = CategoryButton(ArmorCosmeticCategory)
             buttons[21] = CategoryButton(CostumesCosmeticCategory)
 
-            buttons[23] = CategoryButton(TracksCosmeticCategory)
-            buttons[24] = CategoryButton(EffectsCosmeticCategory)
+            buttons[23] = CategoryButton(EmotesCosmeticCategory)
+            buttons[24] = CategoryButton(TracksCosmeticCategory)
+            buttons[25] = CategoryButton(EffectsCosmeticCategory)
         }
     }
 

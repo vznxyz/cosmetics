@@ -1,11 +1,13 @@
 package net.evilblock.cosmetics.category.track.menu
 
+import net.evilblock.cosmetics.CosmeticsPlugin
 import net.evilblock.cosmetics.category.track.Track
 import net.evilblock.cosmetics.category.track.TrackHandler
 import net.evilblock.cosmetics.category.track.player.PlayerTrack
 import net.evilblock.cosmetics.profile.ProfileHandler
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.Menu
+import net.evilblock.cubed.menu.buttons.BackButton
 import net.evilblock.cubed.menu.buttons.GlassButton
 import net.evilblock.cubed.util.bukkit.enchantment.GlowEnchantment
 import org.bukkit.ChatColor
@@ -30,6 +32,7 @@ class TracksMenu : Menu() {
                 buttons[i] = GlassButton(0)
             }
 
+            buttons[0] = BackButton { CosmeticsPlugin.instance.hook.openMainMenu(player) }
             buttons[4] = InfoButton()
 
             for ((index, track) in TrackHandler.getTracks().withIndex()) {
@@ -131,8 +134,13 @@ class TracksMenu : Menu() {
                 if (profile.track != null && profile.track!!.track == track) {
                     profile.track = null
                 } else {
-                    profile.track = PlayerTrack(track)
+                    val track = PlayerTrack(track)
+                    track.cachedPlayer = player
+
+                    profile.track = track
                 }
+
+                profile.requiresSave = true
             }
         }
     }

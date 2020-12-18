@@ -29,13 +29,13 @@ abstract class RingsEffect(private val particle: EnumParticle) : TickableCosmeti
     private fun buildSmallRing(player: Player, ticks: Int, y: Double) {
         val angle = ticks * ((2 * Math.PI) / 32)
         val location = player.location.clone().add(0.6 * cos(angle), y, 0.6 * sin(angle))
-        ParticleUtil.sendsParticleToAll(ParticleMeta(location, particle, 0F, 0F, 0F, 0F, 2))
+        ParticleUtil.sendsParticleToAll(location.world, ParticleMeta(location, particle, 0F, 0F, 0F, 0F, 2))
     }
 
     private fun buildBigRing(player: Player, ticks: Int, y: Double) {
         val angle = ticks * ((2 * Math.PI) / 32)
         val location = player.location.clone().add(0.8 * cos(angle), y, 0.8 * sin(angle))
-        ParticleUtil.sendsParticleToAll(ParticleMeta(location, particle, 0F, 0F, 0F, 0F, 2))
+        ParticleUtil.sendsParticleToAll(location.world, ParticleMeta(location, particle, 0F, 0F, 0F, 0F, 2))
     }
 
 }
