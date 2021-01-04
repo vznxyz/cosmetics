@@ -48,6 +48,7 @@ class RainbowArmorCosmetic : TickableCosmetic(), Listener {
                 || player.inventory.leggings != null
                 || player.inventory.boots != null) {
             player.sendMessage("${ChatColor.RED}You must unequip all of your armor to enable this cosmetic!")
+            return false
         }
 
         return true

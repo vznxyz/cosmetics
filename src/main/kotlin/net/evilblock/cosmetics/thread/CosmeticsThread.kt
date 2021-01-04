@@ -9,23 +9,41 @@ import org.bukkit.entity.Player
 
 class CosmeticsThread : Thread("Cosmetics - Tick Thread") {
 
-    var lastSaveCheck: Long = System.currentTimeMillis()
+    var lastSave: Long = System.currentTimeMillis()
 
     override fun run() {
         while (true) {
-            if (System.currentTimeMillis() - lastSaveCheck >= 30_000L) {
-                for (profile in ProfileHandler.getProfiles()) {
-                    try {
-                        if (profile.requiresSave) {
-                            ProfileHandler.saveProfile(profile)
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
+            try {
+                runLogic()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
 
-            for (player in Bukkit.getOnlinePlayers()) {
+            try {
+                sleep(50L)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun runLogic() {
+        if (System.currentTimeMillis() - lastSave >= 30_000L) {
+            lastSave = System.currentTimeMillis()
+
+            for (profile in ProfileHandler.getProfiles()) {
+                try {
+                    if (profile.requiresSave) {
+                        ProfileHandler.saveProfile(profile)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        for (player in Bukkit.getOnlinePlayers()) {
+            try {
                 if (!player.isOnline) {
                     continue
                 }
@@ -43,18 +61,10 @@ class CosmeticsThread : Thread("Cosmetics - Tick Thread") {
                         continue
                     }
 
-                    try {
-                        tickCosmetics(player, profile)
-                        tickTrack(player, profile)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                    tickCosmetics(player, profile)
+                    tickTrack(player, profile)
                 }
-            }
-
-            try {
-                sleep(50L)
-            } catch (e: InterruptedException) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
